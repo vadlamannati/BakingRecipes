@@ -2,4 +2,16 @@
     <dimen name="app_bar_height">180dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="text_margin">16dp</dimen>
+
+    <dimen name="margin_left">12dp</dimen>
+    <dimen name="margin_right">12dp</dimen>
+    <dimen name="margin_top">12dp</dimen>
+    <dimen name="card_view_corner_radius">4dp</dimen>
+    <dimen name="card_view_elevation">2dp</dimen>
+
+    <dimen name="large_text_size">32dp</dimen>
+    <dimen name="sub_head_text_size">26dp</dimen>
+    <dimen name="side_head_text_size">22dp</dimen>
+    <dimen name="paragraph_text_size">18dp</dimen>
+
 </resources>
