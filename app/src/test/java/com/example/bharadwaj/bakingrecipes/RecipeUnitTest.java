@@ -2,7 +2,7 @@ package com.example.bharadwaj.bakingrecipes;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Recipe local unit test, which will execute on the development machine (host).

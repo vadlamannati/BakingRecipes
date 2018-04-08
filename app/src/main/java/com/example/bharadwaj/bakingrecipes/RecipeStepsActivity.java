@@ -11,6 +11,7 @@ import android.view.MenuItem;
 
 import com.example.bharadwaj.bakingrecipes.constants.Constants;
 import com.example.bharadwaj.bakingrecipes.model.Recipe;
+import com.example.bharadwaj.bakingrecipes.widget.UpdateRecipeWidgetService;
 
 import org.parceler.Parcels;
 
@@ -123,6 +124,8 @@ public class RecipeStepsActivity extends AppCompatActivity implements RecipeStep
             fragmentTransaction.commit();
 
         }
+
+        UpdateRecipeWidgetService.startRecipeIntentService(this, mCurrentRecipe);
 
         Log.v(LOG_TAG, "Leaving RecipeStepsActivity");
     }

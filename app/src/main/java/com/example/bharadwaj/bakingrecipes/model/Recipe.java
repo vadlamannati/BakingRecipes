@@ -1,11 +1,7 @@
 
 package com.example.bharadwaj.bakingrecipes.model;
 
-import android.graphics.Color;
 import android.support.annotation.NonNull;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.style.ForegroundColorSpan;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

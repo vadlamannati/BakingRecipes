@@ -79,7 +79,6 @@ public class MainActivity extends AppCompatActivity {
 
         Log.v(LOG_TAG, "RecyclerView Adapter check : " + recipeRecyclerView.getAdapter());
 
-
         Log.v(LOG_TAG, "Leaving MainActivity");
     }
 

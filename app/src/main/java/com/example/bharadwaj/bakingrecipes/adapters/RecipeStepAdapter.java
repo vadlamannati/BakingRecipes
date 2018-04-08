@@ -1,7 +1,6 @@
 package com.example.bharadwaj.bakingrecipes.adapters;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -11,7 +10,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.example.bharadwaj.bakingrecipes.R;
-import com.example.bharadwaj.bakingrecipes.RecipeStepsFragment;
 import com.example.bharadwaj.bakingrecipes.RecipeStepsFragment.OnRecipeStepsFragmentInteractionListener;
 import com.example.bharadwaj.bakingrecipes.constants.Constants;
 import com.example.bharadwaj.bakingrecipes.model.Recipe;

@@ -14,6 +14,7 @@ import com.example.bharadwaj.bakingrecipes.R;
 import com.example.bharadwaj.bakingrecipes.RecipeStepsActivity;
 import com.example.bharadwaj.bakingrecipes.constants.Constants;
 import com.example.bharadwaj.bakingrecipes.model.Recipe;
+import com.example.bharadwaj.bakingrecipes.widget.RecipeIngredientsWidgetProvider;
 import com.squareup.picasso.Picasso;
 
 import org.parceler.Parcels;
@@ -78,7 +79,15 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
     public void fillRecipeData(List<Recipe> recipes) {
         Log.v(LOG_TAG, "Filling Recipes into Adapter...");
         this.recipes = recipes;
+        //Setting First recipe by default for Widget
+        RecipeIngredientsWidgetProvider.setInitialRecipe(getFirstRecipeForWidget());
+
         notifyDataSetChanged();
+    }
+
+    public Recipe getFirstRecipeForWidget(){
+        if (recipes!= null) return recipes.get(0);
+        return null;
     }
 
     public class RecipeViewHolder extends RecyclerView.ViewHolder {
