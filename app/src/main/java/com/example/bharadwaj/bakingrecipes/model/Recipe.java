@@ -1,6 +1,12 @@
 
 package com.example.bharadwaj.bakingrecipes.model;
 
+import android.graphics.Color;
+import android.support.annotation.NonNull;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -13,22 +19,22 @@ public class Recipe {
 
     @SerializedName("id")
     @Expose
-    int id;
+    private int id;
     @SerializedName("name")
     @Expose
-    String name;
+    private String name;
     @SerializedName("ingredients")
     @Expose
-    List<Ingredient> ingredients = null;
+    private List<Ingredient> ingredients = null;
     @SerializedName("steps")
     @Expose
-    List<Step> steps = null;
+    private List<Step> steps = null;
     @SerializedName("servings")
     @Expose
-    int servings;
+    private int servings;
     @SerializedName("image")
     @Expose
-    String image;
+    private String image;
 
     public Recipe() {
     }
@@ -76,5 +82,16 @@ public class Recipe {
                 ", servings=" + servings +
                 ", image='" + image + '\'' +
                 '}';
+    }
+
+    public String getIngredientsAsList() {
+        @NonNull String ingredientsAsList = "";
+        for (int i = 0; i < ingredients.size(); i++) {
+            Ingredient currentIngredient = ingredients.get(i);
+            ingredientsAsList += currentIngredient.getQuantity() + " "
+                    + currentIngredient.getMeasure() + " of "
+                    + currentIngredient.getIngredient() + "\n";
+        }
+        return ingredientsAsList;
     }
 }

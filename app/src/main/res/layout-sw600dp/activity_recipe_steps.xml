@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/recipe_steps_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.example.bharadwaj.bakingrecipes.RecipeStepsActivity">
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/app_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="true"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/steps_activity_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:layout_collapseMode="pin"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+    </android.support.design.widget.AppBarLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:weightSum="1"
+        android:orientation="horizontal">
+
+        <FrameLayout
+            android:id="@+id/recipe_steps_placeholder_fragment"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.33"
+            android:layout_gravity="start|center_vertical"
+            android:padding="@dimen/view_border_padding" />
+
+        <View
+            android:id="@+id/saperator"
+            android:layout_width="2dp"
+            android:background="@android:color/darker_gray"
+            android:layout_height="match_parent"/>
+
+        <FrameLayout
+            android:id="@+id/steps_details_placeholder_fragment"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="end|center_vertical"
+            android:layout_weight="0.67"
+            android:padding="@dimen/view_border_padding" />
+
+    </LinearLayout>
+
+</android.support.design.widget.CoordinatorLayout>

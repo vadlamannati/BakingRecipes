@@ -11,19 +11,19 @@ public class Step {
 
     @SerializedName("id")
     @Expose
-    int id;
+    private int id;
     @SerializedName("shortDescription")
     @Expose
-    String shortDescription;
+    private String shortDescription;
     @SerializedName("description")
     @Expose
-    String description;
+    private String description;
     @SerializedName("videoURL")
     @Expose
-    String videoURL;
+    private String videoURL;
     @SerializedName("thumbnailURL")
     @Expose
-    String thumbnailURL;
+    private String thumbnailURL;
 
     public Step() {
     }
@@ -56,4 +56,14 @@ public class Step {
         return thumbnailURL;
     }
 
+    @Override
+    public String toString() {
+        return "Step{" +
+                "id=" + id +
+                ", shortDescription='" + shortDescription + '\'' +
+                ", description='" + description + '\'' +
+                ", videoURL='" + videoURL + '\'' +
+                ", thumbnailURL='" + thumbnailURL + '\'' +
+                '}';
+    }
 }

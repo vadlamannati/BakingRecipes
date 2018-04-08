@@ -62,4 +62,15 @@
         <item name="android:fontFamily" tools:targetApi="jelly_bean">sans-serif</item>
     </style>
 
+    <style name="RecipeDetailsTextStyle" parent="ParagraghTextStyle">
+        <item name="android:padding">@dimen/view_border_padding</item>
+    </style>
+
+    <style name="StepsTextStyle" parent="tripleMargin">
+        <item name="android:textSize">@dimen/side_head_text_size</item>
+        <item name="android:color">@android:color/black</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily" tools:targetApi="jelly_bean">sans-serif</item>
+    </style>
+
 </resources>

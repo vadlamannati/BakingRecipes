@@ -30,7 +30,7 @@ public class ServiceCreator {
                 .client(sOkHttpClient.build())
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-        //Log.v(LOG_TAG, "");
+        //Log.v(TAG, "");
         return retrofit.create(service);
 
     }

@@ -18,7 +18,7 @@
             <ImageView
                 android:id="@+id/recipe_preview_view"
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
+                android:layout_height="wrap_content"
                 android:contentDescription="@string/recipe_preview_image"
                 card_view:layout_constraintEnd_toEndOf="parent"
                 card_view:layout_constraintStart_toStartOf="parent"

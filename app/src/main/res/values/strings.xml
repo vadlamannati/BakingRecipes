@@ -6,4 +6,17 @@
     <string name="recipe_name">Recipe Name</string>
     <string name="recipe_servings_heading">Makes servings for :</string>
     <string name="eight_sample">8</string>
+    <string name="title_activity_steps">StepsActivity</string>
+    <string name="title_activity_step_details">StepDetailsActivity</string>
+    <string name="ingredients">Ingredients:</string>
+    <string name="steps">Steps:</string>
+    <string name="previous_step_button"><![CDATA[<- Previous Step]]></string>
+    <string name="next_step_button"><![CDATA[Next Step ->]]></string>
+    <string name="video_not_available">Video not available</string>
+
+    <string name="portrait_detector">Portrait</string>
+    <string name="landscape_detector">Landscape</string>
+    <string name="smallest_width_600_detector">Smallest Width 600</string>
+
+    <string name="media_player_place_holder_text">media player place holder</string>
 </resources>

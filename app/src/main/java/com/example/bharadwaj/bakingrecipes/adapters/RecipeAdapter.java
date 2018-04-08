@@ -1,6 +1,7 @@
-package com.example.bharadwaj.bakingrecipes;
+package com.example.bharadwaj.bakingrecipes.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,13 +10,19 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.bharadwaj.bakingrecipes.R;
+import com.example.bharadwaj.bakingrecipes.RecipeStepsActivity;
+import com.example.bharadwaj.bakingrecipes.constants.Constants;
 import com.example.bharadwaj.bakingrecipes.model.Recipe;
 import com.squareup.picasso.Picasso;
+
+import org.parceler.Parcels;
 
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 /**
  * Created by Bharadwaj on 1/18/18.
@@ -24,18 +31,19 @@ import butterknife.ButterKnife;
 public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeViewHolder> {
 
     private static final String LOG_TAG = RecipeAdapter.class.getSimpleName();
+    private Context mContext;
     List<Recipe> recipes;
 
-    public RecipeAdapter() {
-
+    public RecipeAdapter(Context context) {
+        mContext = context;
     }
 
     @Override
     public RecipeViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        Context context = parent.getContext();
-        View view = LayoutInflater.from(context).inflate(R.layout.recipe_list_item, parent, false);
 
-        Log.v(LOG_TAG, "Returning new ViewHolder object");
+        View view = LayoutInflater.from(mContext).inflate(R.layout.recipe_list_item, parent, false);
+
+        //Log.v(LOG_TAG, "Returning new ViewHolder object for recipe");
         return new RecipeViewHolder(view);
     }
 
@@ -48,13 +56,14 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         recipeViewHolder.recipeServingsValueView.setText(String.valueOf(recipe.getServings()));
 
         if( recipe.getImage() != null && recipe.getImage() != "" ){
-            Picasso.with(recipeViewHolder.recipePreviewView.getContext())
+            Picasso.with(mContext)
                     .load(recipe.getImage())
                     .placeholder(R.mipmap.recipe_preview_view_holder)
                     .error(R.mipmap.recipe_preview_view_error)
                     .fit()
                     .into(recipeViewHolder.recipePreviewView);
         }else {
+
             //recipeViewHolder.recipePreviewView.setVisibility(View.GONE);
         }
 
@@ -87,6 +96,15 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
+
+        @OnClick(R.id.recipe_list_item)
+        public void startRecipeDetailsIntent(){
+            Log.v(LOG_TAG, "Starting Intent to RecipeStepsActivity");
+            Intent recipeDetailsIntent = new Intent(mContext,RecipeStepsActivity.class);
+            recipeDetailsIntent.putExtra(Constants.RECIPE, Parcels.wrap(recipes.get(getAdapterPosition())));
+            mContext.startActivity(recipeDetailsIntent);
+        }
+
     }
 
 }

@@ -11,13 +11,13 @@ public class Ingredient {
 
     @SerializedName("quantity")
     @Expose
-    float quantity;
+    private float quantity;
     @SerializedName("measure")
     @Expose
-    String measure;
+    private String measure;
     @SerializedName("ingredient")
     @Expose
-    String ingredient;
+    private String ingredient;
 
     public float getQuantity() {
         return quantity;

@@ -13,6 +13,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.example.bharadwaj.bakingrecipes.adapters.RecipeAdapter;
+import com.example.bharadwaj.bakingrecipes.constants.Constants;
 import com.example.bharadwaj.bakingrecipes.model.Recipe;
 import com.example.bharadwaj.bakingrecipes.network.NetworkUtils;
 
@@ -30,6 +32,8 @@ public class MainActivity extends AppCompatActivity {
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
     private RecipeAdapter mRecipeAdapter;
     private GridLayoutManager mGridLayoutManager;
+
+    @BindView(R.id.main_activity_toolbar) Toolbar toolbar;
     @BindView(R.id.recipe_list) RecyclerView recipeRecyclerView;
 
     @Override
@@ -40,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        //Toolbar toolbar = (Toolbar) findViewById(R.id.main_activity_toolbar);
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -58,8 +62,17 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        mRecipeAdapter = new RecipeAdapter();
-        mGridLayoutManager = new GridLayoutManager(MainActivity.this, 1);
+        mRecipeAdapter = new RecipeAdapter(this);
+        if(getResources().getString(R.string.configurationDetector).equals(Constants.IN_PORTRAIT_MODE)){
+            Log.v(LOG_TAG, "Testing portrait detector");
+            mGridLayoutManager = new GridLayoutManager(MainActivity.this, 1);
+        }else if(getResources().getString(R.string.configurationDetector).equals(Constants.IN_LANDSCAPE_MODE)){
+            Log.v(LOG_TAG, "Testing landscape detector");
+            mGridLayoutManager = new GridLayoutManager(MainActivity.this, 2);
+        }else if (getResources().getString(R.string.configurationDetector).equals(Constants.IN_TABLET_MODE)){
+            Log.v(LOG_TAG, "Testing Tablet detector");
+            mGridLayoutManager = new GridLayoutManager(MainActivity.this, 3);
+        }
 
         recipeRecyclerView.setAdapter(mRecipeAdapter);
         recipeRecyclerView.setLayoutManager(mGridLayoutManager);

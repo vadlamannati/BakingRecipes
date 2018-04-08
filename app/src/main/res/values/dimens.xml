@@ -14,4 +14,9 @@
     <dimen name="side_head_text_size">22dp</dimen>
     <dimen name="paragraph_text_size">18dp</dimen>
 
+    <dimen name="view_border_padding">2dp</dimen>
+
+    <dimen name="step_button_saperator">2dp</dimen>
+    <dimen name="step_button_elevation">4dp</dimen>
+
 </resources>
