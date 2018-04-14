@@ -21,16 +21,15 @@ import butterknife.ButterKnife;
 public class RecipeStepsActivity extends AppCompatActivity implements RecipeStepsFragment.OnRecipeStepsFragmentInteractionListener {
 
     private static final String LOG_TAG = RecipeStepsActivity.class.getSimpleName();
+    Fragment retainedRecipeStepsFragment;
+    Fragment retainedStepDetailsFragment;
+    @BindView(R.id.steps_activity_toolbar)
+    Toolbar toolbar;
     private RecipeStepsFragment mRecipeStepsFragment;
     private StepDetailsFragment mStepDetailsFragment;
     private boolean reconfigureAppBarBackButton = false;
     private Recipe mCurrentRecipe;
     private int fragmentIdentifier = RecipeStepsFragment.fragmentIdentifier;
-    Fragment retainedRecipeStepsFragment;
-    Fragment retainedStepDetailsFragment;
-
-    @BindView(R.id.steps_activity_toolbar)
-    Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +53,8 @@ public class RecipeStepsActivity extends AppCompatActivity implements RecipeStep
                 mCurrentRecipe = Parcels.unwrap(recipeStepsIntent.getParcelableExtra(Constants.RECIPE));
             }
         }
-        toolbar.setTitle(Constants.RECIPE_STEPS_TITLE + mCurrentRecipe.getName());
+        if (mCurrentRecipe != null)
+            toolbar.setTitle(Constants.RECIPE_STEPS_TITLE + mCurrentRecipe.getName());
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);

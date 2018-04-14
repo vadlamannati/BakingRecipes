@@ -52,6 +52,10 @@ public class Step {
         return videoURL;
     }
 
+    public void setVideoURL(String videoURL) {
+        this.videoURL = videoURL;
+    }
+
     public String getThumbnailURL() {
         return thumbnailURL;
     }

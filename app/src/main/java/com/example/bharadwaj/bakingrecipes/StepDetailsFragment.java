@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.bharadwaj.bakingrecipes.constants.Constants;
@@ -39,6 +40,7 @@ import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
+import com.squareup.picasso.Picasso;
 
 import org.parceler.Parcels;
 
@@ -53,28 +55,29 @@ public class StepDetailsFragment extends Fragment implements Player.EventListene
     protected static final String LOG_TAG = StepDetailsFragment.class.getSimpleName();
 
     static final int fragmentIdentifier = 200;
-
-    private Recipe mCurrentRecipe;
-    private int mCurrentStepID;
-    private SimpleExoPlayer mRecipeVideoPlayer;
     private static MediaSessionCompat mMediaSession;
-    private PlaybackStateCompat.Builder mStateBuilder;
-    private long mSavedPosition;
-    private Unbinder mUnbinder;
-
+    boolean isPlayWhenReady = true;
     @Nullable
     @BindView(R.id.steps_details)
     TextView stepDetailsView;
     @Nullable
     @BindView(R.id.previous_step_button)
-    Button previous_step_button;
+    Button previousStepButton;
     @Nullable
     @BindView(R.id.next_step_button)
-    Button next_step_button;
-    @BindView(R.id.recipe_player_view)
-    PlayerView recipePlayerView;
+    Button nextStepButton;
+    @BindView(R.id.step_player_view)
+    PlayerView stepVideoPlayerView;
+    @BindView(R.id.step_thumbnail_view)
+    ImageView stepThumbnailView;
     @BindView(R.id.recipe_no_video_placeholder_view)
-    TextView recipeNoVideoPlaceholderView;
+    TextView step_noVideo_noThumbnail_placeHolder;
+    private Recipe mCurrentRecipe;
+    private int mCurrentStepID;
+    private SimpleExoPlayer mRecipeVideoPlayer;
+    private PlaybackStateCompat.Builder mStateBuilder;
+    private long mSavedPosition = 0;
+    private Unbinder mUnbinder;
 
     public StepDetailsFragment() {
         // Required empty public constructor
@@ -84,12 +87,21 @@ public class StepDetailsFragment extends Fragment implements Player.EventListene
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.v(LOG_TAG, "Entering onCreate");
-        setRetainInstance(true);
+        //setRetainInstance(true);
 
         retreiveFromSavedInstanceOrArguments(savedInstanceState);
+
         Log.v(LOG_TAG, "Leaving onCreate");
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        initializeMediaSession();
+        initializeAndSetupRecipeVideoPlayer();
+
+
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -102,10 +114,8 @@ public class StepDetailsFragment extends Fragment implements Player.EventListene
         setupViewsBasedOnConfiguration();
 
 
-        // Initialize the Media Session.
-        initializeMediaSession();
+        // Initializing and setting the Media Session handled in onResume.
 
-        initializeAndSetupRecipeVideoPlayer();
 
         Log.v(LOG_TAG, "Leaving onCreateView");
 
@@ -116,7 +126,9 @@ public class StepDetailsFragment extends Fragment implements Player.EventListene
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        retreiveFromSavedInstanceOrArguments(savedInstanceState);
+        setRetainInstance(true);
+
+        //retreiveFromSavedInstanceOrArguments(savedInstanceState);
     }
 
     private void retreiveFromSavedInstanceOrArguments(Bundle savedInstanceState) {
@@ -124,7 +136,7 @@ public class StepDetailsFragment extends Fragment implements Player.EventListene
         if (savedInstanceState != null) {
             mSavedPosition = savedInstanceState.getLong(Constants.PLAYER_SAVED_POSITION);
             //Log.v(LOG_TAG, "Saved position : " + mSavedPosition);
-            recipePlayerView.getPlayer().seekTo(mSavedPosition);
+
         }
 
         //Retrieving Recipe and Step ID
@@ -136,8 +148,9 @@ public class StepDetailsFragment extends Fragment implements Player.EventListene
             if (savedInstanceState.getParcelable(Constants.RECIPE) != null) {
                 mCurrentRecipe = Parcels.unwrap(savedInstanceState.getParcelable(Constants.RECIPE));
             }
+            isPlayWhenReady = savedInstanceState.getBoolean(Constants.PLAY_STATE);
             Log.v(LOG_TAG, " savedInstanceState object : " + mCurrentRecipe.getName());
-        }else if (getArguments() != null) {
+        } else if (getArguments() != null) {
             Log.v(LOG_TAG, "From Arguments");
             mCurrentStepID = getArguments().getInt(Constants.STEP_ID);
             mCurrentRecipe = Parcels.unwrap(getArguments().getParcelable(Constants.RECIPE));
@@ -197,7 +210,7 @@ public class StepDetailsFragment extends Fragment implements Player.EventListene
         mRecipeVideoPlayer = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector, loadControl);
 
         // Bind the player to the view.
-        recipePlayerView.setPlayer(mRecipeVideoPlayer);
+        stepVideoPlayerView.setPlayer(mRecipeVideoPlayer);
         // Set the ExoPlayer.EventListener to this activity.
         mRecipeVideoPlayer.addListener(this);
 
@@ -212,75 +225,93 @@ public class StepDetailsFragment extends Fragment implements Player.EventListene
 
         // Prepare the player with the source.
         mRecipeVideoPlayer.prepare(videoSource);
-        mRecipeVideoPlayer.setPlayWhenReady(true);
+        mRecipeVideoPlayer.setPlayWhenReady(isPlayWhenReady);
 
-        if(getResources().getString(R.string.configurationDetector).equals(Constants.IN_LANDSCAPE_MODE)){
-            recipePlayerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FILL);
+        stepVideoPlayerView.getPlayer().seekTo(mSavedPosition);
+
+        if (getResources().getString(R.string.configurationDetector).equals(Constants.IN_LANDSCAPE_MODE)) {
+            stepVideoPlayerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FILL);
         }
 
         Log.v(LOG_TAG, "Leaving initializeAndSetupRecipeVideoPlayer");
     }
 
-    void showPlaceholderAndHideVideoView() {
-        recipeNoVideoPlaceholderView.setVisibility(View.VISIBLE);
-        recipeNoVideoPlaceholderView.setText(Constants.VIDEO_NOT_AVAILABLE);
-        recipePlayerView.setVisibility(View.GONE);
+    void showPlaceholder_hideVideo_hideThumbnail() {
+        stepVideoPlayerView.setVisibility(View.GONE);
+        stepThumbnailView.setVisibility(View.GONE);
+        step_noVideo_noThumbnail_placeHolder.setVisibility(View.VISIBLE);
+        step_noVideo_noThumbnail_placeHolder.setText(Constants.VIDEO_THUMBNAIL_NOT_AVAILABLE);
     }
 
-    void showVideoViewAndHidePlaceholder() {
-        recipeNoVideoPlaceholderView.setVisibility(View.GONE);
-        recipePlayerView.setVisibility(View.VISIBLE);
+    void showVideo_hideThumbnail_hidePlaceholder() {
+        step_noVideo_noThumbnail_placeHolder.setVisibility(View.GONE);
+        stepThumbnailView.setVisibility(View.GONE);
+        stepVideoPlayerView.setVisibility(View.VISIBLE);
+    }
+
+    void showThumbnail_hideVideo_hidePlaceholder() {
+        step_noVideo_noThumbnail_placeHolder.setVisibility(View.GONE);
+        stepVideoPlayerView.setVisibility(View.GONE);
+        stepThumbnailView.setVisibility(View.VISIBLE);
     }
 
     void showVideoViewAndHideOtherViews() {
-        recipePlayerView.setVisibility(View.VISIBLE);
+        stepVideoPlayerView.setVisibility(View.VISIBLE);
         //Hiding all other views
-        recipeNoVideoPlaceholderView.setVisibility(View.GONE);
+        stepThumbnailView.setVisibility(View.GONE);
+        step_noVideo_noThumbnail_placeHolder.setVisibility(View.GONE);
         stepDetailsView.setVisibility(View.GONE);
-        previous_step_button.setVisibility(View.GONE);
-        next_step_button.setVisibility(View.GONE);
-        recipeNoVideoPlaceholderView.setVisibility(View.GONE);
-
-
+        previousStepButton.setVisibility(View.GONE);
+        nextStepButton.setVisibility(View.GONE);
     }
 
-    void setupViewsBasedOnConfiguration(){
-
-        switch (getResources().getString(R.string.configurationDetector)){
+    void setupViewsBasedOnConfiguration() {
+        String thumbnailUrl = mCurrentRecipe.getSteps().get(mCurrentStepID).getThumbnailURL();
+        if (thumbnailUrl.toLowerCase().endsWith(Constants.MP4)) {
+            mCurrentRecipe.getSteps().get(mCurrentStepID).setVideoURL(mCurrentRecipe.getSteps().get(mCurrentStepID).getThumbnailURL());
+        }
+        switch (getResources().getString(R.string.configurationDetector)) {
             case Constants.IN_PORTRAIT_MODE:
                 if (!mCurrentRecipe.getSteps().get(mCurrentStepID).getVideoURL().isEmpty()) {
-                    showVideoViewAndHidePlaceholder();
+                    showVideo_hideThumbnail_hidePlaceholder();
+                } else if (!mCurrentRecipe.getSteps().get(mCurrentStepID).getThumbnailURL().isEmpty()) {
+                    showThumbnail_hideVideo_hidePlaceholder();
                 } else {
-                    showPlaceholderAndHideVideoView();
+                    showPlaceholder_hideVideo_hideThumbnail();
                 }
                 setStepDetails();
                 break;
             case Constants.IN_LANDSCAPE_MODE:
                 if (!mCurrentRecipe.getSteps().get(mCurrentStepID).getVideoURL().isEmpty()) {
                     showVideoViewAndHideOtherViews();
+                } else if (!mCurrentRecipe.getSteps().get(mCurrentStepID).getThumbnailURL().isEmpty()) {
+                    showThumbnail_hideVideo_hidePlaceholder();
+                    setStepDetails();
                 } else {
-                    showPlaceholderAndHideVideoView();
+                    showPlaceholder_hideVideo_hideThumbnail();
                     setStepDetails();
                 }
                 break;
             case Constants.IN_TABLET_MODE:
                 if (!mCurrentRecipe.getSteps().get(mCurrentStepID).getVideoURL().isEmpty()) {
-                    showVideoViewAndHidePlaceholder();
+                    showVideo_hideThumbnail_hidePlaceholder();
+                } else if (!mCurrentRecipe.getSteps().get(mCurrentStepID).getThumbnailURL().isEmpty()) {
+                    showThumbnail_hideVideo_hidePlaceholder();
                 } else {
-                    showPlaceholderAndHideVideoView();
+                    showPlaceholder_hideVideo_hideThumbnail();
                 }
                 stepDetailsView.setText(mCurrentRecipe.getSteps().get(mCurrentStepID).getDescription());
                 break;
             default:
-                Log.v(LOG_TAG,"Configuration not recognized");
+                Log.v(LOG_TAG, "Configuration not recognized");
         }
 
         /*Log.v(LOG_TAG,"RootView is : " + rootView.toString());
         Log.v(LOG_TAG,"Visibility of details : " + String.valueOf(stepDetailsView.getVisibility()));
-        Log.v(LOG_TAG,"Visibility of place holder : " + String.valueOf(recipeNoVideoPlaceholderView.getVisibility()));
-        Log.v(LOG_TAG,"Visibility of video holder : " + String.valueOf(recipePlayerView.getVisibility()));
-        Log.v(LOG_TAG,"Visibility of previous button : " + String.valueOf(previous_step_button.getVisibility()));
-        Log.v(LOG_TAG,"Visibility of next button : " + String.valueOf(next_step_button.getVisibility()));
+        Log.v(LOG_TAG,"Visibility of place holder : " + String.valueOf(step_noVideo_noThumbnail_placeHolder.getVisibility()));
+        Log.v(LOG_TAG,"Visibility of video holder : " + String.valueOf(stepVideoPlayerView.getVisibility()));
+        Log.v(LOG_TAG,"Visibility of previous button : " + String.valueOf(previousStepButton.getVisibility()));
+        Log.v(LOG_TAG,"Visibility of next button : " + String.valueOf(nextStepButton.getVisibility()));
         */
     }
 
@@ -289,15 +320,25 @@ public class StepDetailsFragment extends Fragment implements Player.EventListene
         if (mCurrentStepID >= 0) {
             stepDetailsView.setVisibility(View.VISIBLE);
             stepDetailsView.setText(mCurrentRecipe.getSteps().get(mCurrentStepID).getDescription());
+
+            if (!mCurrentRecipe.getSteps().get(mCurrentStepID).getThumbnailURL().isEmpty()) {
+                Picasso.with(getContext())
+                        .load(mCurrentRecipe.getSteps().get(mCurrentStepID).getThumbnailURL())
+                        .placeholder(R.mipmap.recipe_preview_view_holder)
+                        .error(R.mipmap.recipe_preview_view_error)
+                        .fit()
+                        .into(stepThumbnailView);
+            }
+
             if (mCurrentStepID == 0) {
-                previous_step_button.setVisibility(View.GONE);
-                next_step_button.setVisibility(View.VISIBLE);
+                previousStepButton.setVisibility(View.GONE);
+                nextStepButton.setVisibility(View.VISIBLE);
             } else if (mCurrentStepID == mCurrentRecipe.getSteps().size() - 1) {
-                previous_step_button.setVisibility(View.VISIBLE);
-                next_step_button.setVisibility(View.GONE);
+                previousStepButton.setVisibility(View.VISIBLE);
+                nextStepButton.setVisibility(View.GONE);
             } else {
-                next_step_button.setVisibility(View.VISIBLE);
-                previous_step_button.setVisibility(View.VISIBLE);
+                nextStepButton.setVisibility(View.VISIBLE);
+                previousStepButton.setVisibility(View.VISIBLE);
             }
         } else {
             Log.v(LOG_TAG, "Step ID is negative. Something wrong");
@@ -315,6 +356,9 @@ public class StepDetailsFragment extends Fragment implements Player.EventListene
         outState.putInt(Constants.STEP_ID, mCurrentStepID);
         Log.v(LOG_TAG, "Saving position of video player" + mSavedPosition + " to out instance state");
         outState.putLong(Constants.PLAYER_SAVED_POSITION, mSavedPosition);
+        isPlayWhenReady = mRecipeVideoPlayer.getPlayWhenReady();
+        outState.putBoolean(Constants.PLAY_STATE, isPlayWhenReady);
+
         Log.v(LOG_TAG, "Leaving onSaveInstanceState");
     }
 
@@ -335,12 +379,11 @@ public class StepDetailsFragment extends Fragment implements Player.EventListene
     }
 
 
-    void performWhenPreviousOrNextButtonIsClicked(){
+    void performWhenPreviousOrNextButtonIsClicked() {
         resetRecipeVideoPlayer();
         setupViewsBasedOnConfiguration();
         initializeAndSetupRecipeVideoPlayer();
     }
-
 
 
     void resetRecipeVideoPlayer() {
@@ -353,8 +396,8 @@ public class StepDetailsFragment extends Fragment implements Player.EventListene
     public void onPause() {
         Log.v(LOG_TAG, "Entering onPause method");
         super.onPause();
-        mSavedPosition = Math.max(0, recipePlayerView.getPlayer().getCurrentPosition());
-        recipePlayerView.getPlayer().release();
+        mSavedPosition = Math.max(0, stepVideoPlayerView.getPlayer().getCurrentPosition());
+        stepVideoPlayerView.getPlayer().release();
 
         Log.v(LOG_TAG, "Entering onPause method\n\n");
     }
@@ -438,6 +481,16 @@ public class StepDetailsFragment extends Fragment implements Player.EventListene
 
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+    }
 
     /**
      * Media Session Callbacks, where all external clients control the player.
@@ -457,17 +510,6 @@ public class StepDetailsFragment extends Fragment implements Player.EventListene
         public void onSkipToPrevious() {
             mRecipeVideoPlayer.seekTo(0);
         }
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
     }
 
 

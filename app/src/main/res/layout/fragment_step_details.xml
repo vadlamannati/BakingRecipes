@@ -7,7 +7,7 @@
     tools:context="com.example.bharadwaj.bakingrecipes.StepDetailsFragment">
 
     <com.google.android.exoplayer2.ui.PlayerView
-        android:id="@+id/recipe_player_view"
+        android:id="@+id/step_player_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -18,7 +18,21 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="@string/media_player_place_holder_text" />
+        tools:text="@string/step_video_place_holder_text" />
+
+    <ImageView
+        android:id="@+id/step_thumbnail_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/video_guideline"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="@string/step_thumbnail_place_holder_text" />
 
     <TextView
         android:id="@+id/recipe_no_video_placeholder_view"
@@ -29,7 +43,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="@string/video_not_available" />
+        tools:text="@string/video_or_thumbnail_not_available" />
 
     <android.support.constraint.Guideline
         android:id="@+id/video_guideline"
